@@ -56,8 +56,8 @@ Backup: https://github.com/Hubackova/api-example
             }
           },
           {
-            "time": 2,
-            "dwellingTime": 15,
+            "stepIndex": 2,
+            "stepDuration": 15,
             "perimeter1": {
               "OUT": "IN1"
             },
@@ -240,6 +240,8 @@ Backup: https://github.com/Hubackova/api-example
 ## Table headers [/table-headers]
 ### Get  [GET]
 
++ Response 200 (application/json)
+
         {
           "stepIndex": {
             "headerLabel": "Step Index"
@@ -336,76 +338,6 @@ Backup: https://github.com/Hubackova/api-example
             "outputs": {
               "OUTA": "AMPA",
               "OUTB": "AMPB"
-            }
-          }
-        }
-+ Response 200 (application/json)
-
-        {
-          "time": {
-            "headerLabel": "Step Index"
-          },
-          "dwellingTime": {
-            "headerLabel": "Step Duration"
-          },
-          "perimeter1": {
-            "headerLabel": "Perimeter 1",
-            "idPlug": "RxSP4T",
-            "outputs": { "OUT": "OUT" }
-          },
-          "perimeter2": {
-            "headerLabel": "Perimeter 2",
-            "idPlug": "RxSPDT",
-            "outputs": { "OUT": "OUT" }
-          },
-          "perimeter3": {
-            "headerLabel": "Perimeter 3",
-            "idPlug": "RxSingle",
-            "outputs": { "OUT": "OUT" }
-          },
-          "perimeter4": {
-            "headerLabel": "Perimeter 4",
-            "idPlug": "RxSPDTDual",
-            "outputs": { "OUTA": "OUTA", "OUTB": "OUTB" }
-          },
-          "perimeter5": {
-            "headerLabel": "Perimeter 5",
-            "idPlug": "RxSingleDual",
-            "outputs": { "OUTA": "OUTA", "OUTB": "OUTB" }
-          },
-          "inner1": {
-            "headerLabel": "Inner 1",
-            "idPlug": "SwitchSP4T",
-            "outputs": { "OUTA": "AMPA", "OUTB": "AMPB" }
-          },
-          "inner2": {
-            "headerLabel": "Inner 2",
-            "idPlug": "SwitchSP8T",
-            "outputs": { "OUTA": "AMPA", "OUTB": "AMPB" }
-          },
-          "inner3": {
-            "headerLabel": "Inner 3",
-            "idPlug": "SwitchDP4T",
-            "outputs": { "OUTA": "OUTA", "OUTB": "OUTB" }
-          },
-          "inner4": {
-            "headerLabel": "Inner 4",
-            "idPlug": "Attenuator",
-            "outputs": { "OUT": "ATTN" },
-            "inner5": {
-              "headerLabel": "Inner 5",
-              "idPlug": "AttenuatorDual",
-              "outputs": { "OUTA": "ATTNA", "OUTB": "ATTNB" }
-            },
-            "inner6": {
-              "headerLabel": "Inner 6",
-              "idPlug": "Amplifier",
-              "outputs": { "OUT": "AMP" }
-            },
-            "inner7": {
-              "headerLabel": "Inner 7",
-              "idPlug": "AmplifierDual",
-              "outputs": { "OUTA": "AMPA", "OUTB": "AMPB" }
             }
           }
         }
