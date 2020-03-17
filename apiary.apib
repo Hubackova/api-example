@@ -1,0 +1,545 @@
+FORMAT: 1A
+HOST: https://polls.apiblueprint.org/
+
+# API example
+
+## Whole Table [/table]
+
+### List All Table Cells [GET]
+Header vlastne nepotrebujeme. Jmena sloupcu budou nemenny, takze ty mi proste nadiktujete/poslete v nejakym 
+textaku - nemusi je vracet api. (pripade muzeme je i internacionalizovat, pokud by byla potreba i jina 
+lokalizace nez anglictina);
+
+**Martin:**
+- muze byt, ale chtel jsem to puvodne vsechno soustredit nekde v backendu, aby se to dalo snadno menit se zmenou HW - nas zakaznik je takovy vrtkavy
+- nez textak, neni jednodussi dalsi JSON?
+- *L: Oukej, samozrejme to tam byt muze. Ale vytvorila bych na to zvlastni endpoint - přidala jsem příklad.*
+
+Udelala bych to tak, ze api vrati pole 64 objektu. 
+Kazdy objekt bude mit properties: 
+- "time": integer (jednak to bude jako jednoznacny id, jednak to bude predstavovat cas)
+- "dwellingTime": integer/float (ale asi to bude int) - pokud je dwelling time konstanta, tak teoreticky taky vracet nemusime. **neni to konstanta, nastavuje jej uzivatel**  *ok, v tom pripade tam byt musi*
+- "modules": object (pripadne muzem pojmenovat jinak nez "modules"
+
+Kazdy module-objekt bude mit properties:
+- idSocket": string
+
+- "idPlug": string (ten se muze v ruznych casech menit? nebo je to konstanta? jako napriklad ze "Inner1" ma vzdy  "idPlug": "SP4T"? "Perimeter2" vzdy "RxSP4T" apod? 
+    
+    **backend zjistuje po startu zarizeni, pak uz zustava, ale konstanta to uplne neni**  
+    
+    *L: ok - tak mě něpadá, bude se to v tabulce někde zobrazovat? Představuju si tu tabulku nějak takto:*
+    | Time Index | Dwelling Time | Perimeter 1 | Last Position |
+    |------------|---------------|-------------|---------------|
+    | 1          | 10            | IN1         | 5dB           |
+    | 2          | 15            | IN4         | 5db           |
+    
+    *M: Ano, takto nejak by mela tabulka vypadat.*
+    
+    *M: tady me napada, ze musime pridat jeste jeden header radek anebo nejlepe pridat pod "Perimeter 1" do stejne bunky dalsi text typu "RxSP4T".*
+    *L: ok, pridam to pod to, do stejne bunky, to neni problem*
+    
+    *M: Slo by stejny pristup zobecnit i pro hodnoty typu IN1? Tzn. da se API udelat tak, aby v kazde bunce mohly byt 1-2 radky? Duvodem je to, ze nektere moduly budou dualni a obsahovat dve nezavisle nastavitelne hodnoty. Napr. 1 modul IN1 a druhy IN4. Nebo dokonce IN1A/IN4B, to jeste doladime se zakaznikem.*
+    *L: ok, muzeme value vracet vzdycky jako pole. napr. "value": ["IN1", IN4"] nebo "value": ["IN1"] - predpokladam, ze moznosti, jakych hodnot muze value nabyvat ("listValues"), budou vzdy stejny?*
+    
+- "value": string - indexCurrentValue - tj aktualni hodnota. jakych hodnot to bude nabyvat (to co muze uzivatel vybrat v selectboxu), bych dala zvlast.
+
+    Pokud je ta hodnota cislo a nejaka jednotka, vracela bych jen cislo - a to jaka je to jednotka (napr. dB), tam bude hardCoded. Popr. muzeme vratit jeste "unit": "dB". 
+    
+    *M: nabyva hodnot 0..sizeof()-1*
+    
+    *L: jojo,array od 0*
+    
+    
+
+*L: co se s tema dualnima modulama vyporadat takto? dava to smysl?*
+
+*M: To mi dava smysl, zobecnil jsem zatim stejne i single moduly - dava to taky smysl? Pokud ne, pak muzeme promazat jednu uroven objektu a zavorek {}*
+
+L: (16.3.) takto by mohla byt finalni verze - naformataovala jsem si to, vymazala komentare (v JSONu byt spravne nesmi) a nejaky POC  tabuky jsem z toho vytvorila, tak za me ok
+
+
+L: (17.3) a nebo jeste mozna zjednodusujici navrh: 
+        [
+           {
+              "time":1,
+              "dwellingTime":10,
+              "perimeter1":{
+                 "idPlug":"RxSP4T",
+                 "value":{
+                    "OUT":"IN1"
+                 }
+              },
+              "perimeter2":{
+                 "idPlug":"RxSPDT",
+                 "value":{
+                    "OUT":"IN2-AMP"
+                 }
+              }
+           },
+           {
+              "time":2,
+              "dwellingTime":15,
+              "perimeter1":{
+                 "idPlug":"RxSP4T",
+                 "value":{
+                    "OUT":"IN1"
+                 }
+              },
+              "perimeter2":{
+                 "idPlug":"RxSPDT",
+                 "value":{
+                    "OUT":"IN2-AMP"
+                 }
+              }
+           }
+        ]
+(a pokud bud idPlug v headers...tak to muzeme jeste vyrazne zjednodusit: )
+
+M: (17.3.) Souhlas, pokud se da info idPlug nejak jinak propojit v ramci sloupec-header, muzeme pouzit.
+L: (17.3.) Oukej, mne by asi nejvetsi smysl davalo, kdyby mapovani idSocket-idPlug zajistil backend v headers. takze tohla by mohlo zustat takto.
+
+        [
+           {
+              "time":1,
+              "dwellingTime":10,
+              "perimeter1":{
+                 "OUT":"IN1"
+              },
+              "perimeter2":{
+                 "OUT":"IN2-AMP"
+              }
+           },
+           {
+              "time":2,
+              "dwellingTime":15,
+              "perimeter1":{
+                 "OUT":"IN1"
+              },
+              "perimeter2":{
+                 "OUT":"IN2-AMP"
+              }
+           }
+        ]
+
++ Response 200 (application/json)
+
+        [
+           {
+              "time":1,
+              "dwellingTime":10,
+              "modules":[
+                 {
+                    "idSocket":"perimeter1",
+                    "idPlug":"RxSP4T",
+                    "value":{
+                       "OUT":"IN1"
+                    }
+                 },
+                 {
+                    "idSocket":"perimeter2",
+                    "idPlug":"RxSPDT",
+                    "value":{
+                       "OUT":"IN2-AMP"
+                    }
+                 },
+                 {
+                    "idSocket":"perimeter3",
+                    "idPlug":"RxSingle",
+                    "value":{
+                       "OUT":"BP"
+                    }
+                 },
+                 {
+                    "idSocket":"perimeter4",
+                    "idPlug":"RxSPDTDual",
+                    "value":{
+                       "OUTA":"IN1-AMP",
+                       "OUTB":"IN2-BP"
+                    }
+                 },
+                 {
+                    "idSocket":"perimeter5",
+                    "idPlug":"RxSingleDual",
+                    "value":{
+                       "OUTA":"ON",
+                       "OUTB":"OFF"
+                    }
+                 },
+                 {
+                    "idSocket":"inner1",
+                    "idPlug":"SwitchSP4T",
+                    "value":{
+                       "OUT":"IN3"
+                    }
+                 },
+                 {
+                    "idSocket":"inner2",
+                    "idPlug":"SwitchSP8T",
+                    "value":{
+                       "OUT":"IN7"
+                    }
+                 },
+                 {
+                    "idSocket":"inner3",
+                    "idPlug":"SwitchDP4T",
+                    "value":{
+                       "OUTA":"IN1A",
+                       "OUTB":"IN3B"
+                    }
+                 },
+                 {
+                    "idSocket":"inner4",
+                    "idPlug":"Attenuator",
+                    "value":{
+                       "ATTN":5
+                    }
+                 },
+                 {
+                    "idSocket":"inner5",
+                    "idPlug":"AttenuatorDual",
+                    "value":{
+                       "ATTNA":5,
+                       "ATTNB":7
+                    }
+                 },
+                 {
+                    "idSocket":"inner6",
+                    "idPlug":"Amplifier",
+                    "value":{
+                       "AMP":"ON"
+                    }
+                 },
+                 {
+                    "idSocket":"inner7",
+                    "idPlug":"AmplifierDual",
+                    "value":{
+                       "AMPA":"ON",
+                       "AMPB":"OFF"
+                    }
+                 }
+              ]
+           },
+           {
+              "time":2,
+              "dwellingTime":15,
+              "modules":[
+                 {
+                    "idSocket":"perimeter1",
+                    "idPlug":"RxSP4T",
+                    "value":{
+                       "OUT":"IN1"
+                    }
+                 },
+                 {
+                    "idSocket":"perimeter2",
+                    "idPlug":"RxSPDT",
+                    "value":{
+                       "OUT":"IN2-AMP"
+                    }
+                 },
+                 {
+                    "idSocket":"perimeter3",
+                    "idPlug":"RxSingle",
+                    "value":{
+                       "OUT":"BP"
+                    }
+                 },
+                 {
+                    "idSocket":"perimeter4",
+                    "idPlug":"RxSPDTDual",
+                    "value":{
+                       "OUTA":"IN1-AMP",
+                       "OUTB":"IN2-BP"
+                    }
+                 },
+                 {
+                    "idSocket":"perimeter5",
+                    "idPlug":"RxSingleDual",
+                    "value":{
+                       "OUTA":"ON",
+                       "OUTB":"OFF"
+                    }
+                 },
+                 {
+                    "idSocket":"inner1",
+                    "idPlug":"SwitchSP4T",
+                    "value":{
+                       "OUT":"IN3"
+                    }
+                 },
+                 {
+                    "idSocket":"inner2",
+                    "idPlug":"SwitchSP8T",
+                    "value":{
+                       "OUT":"IN7"
+                    }
+                 },
+                 {
+                    "idSocket":"inner3",
+                    "idPlug":"SwitchDP4T",
+                    "value":{
+                       "OUTA":"IN1A",
+                       "OUTB":"IN3B"
+                    }
+                 },
+                 {
+                    "idSocket":"inner4",
+                    "idPlug":"Attenuator",
+                    "value":{
+                       "ATTN":5
+                    }
+                 },
+                 {
+                    "idSocket":"inner5",
+                    "idPlug":"AttenuatorDual",
+                    "value":{
+                       "ATTNA":5,
+                       "ATTNB":7
+                    }
+                 },
+                 {
+                    "idSocket":"inner6",
+                    "idPlug":"Amplifier",
+                    "value":{
+                       "AMP":"ON"
+                    }
+                 },
+                 {
+                    "idSocket":"inner7",
+                    "idPlug":"AmplifierDual",
+                    "value":{
+                       "AMPA":"ON",
+                       "AMPB":"OFF"
+                    }
+                 }
+              ]
+           }
+        ]
+
+## Module values [/module-values]
+
+### List All Module options values [GET]
+Tady budou hodnoty, ktery muzou jednotlivy moduly nabyvat (to co jsi mel jako "listValues")
+Urcite bych to dala zvlast.
+
+**Martin:**
+Tato pole vyberu hodnot se konkretne vztahuji k "idPlug": "RxSP4T".
+S "idSocket" nemaji primou souvislost.
+Opravil jsem v kodu. *L: ok, v tom pripade je to dobre tak, jak jsi to poupravil*
+"Attenuator" - momentalne vyrabeny typ muze nabyvat hodnot 0dB..7dB s krokem 1dB. 
+ALE: Existuji i atenuatory s krokem např. 0.5dB a rozsahem 0.0dB...31.5dB, proto na ne budme radeji pripraveni 
+
+*L: to je v pohode, JS neresi, jestli je cislo int nebo float. ma proste jen datovej typ number (jeste teda bigInt, ale to normalni smrtelnik nevyuzije)...*
+*ale mozna bysme mohli vracet spis min max a step? tj. "Attenuator": {"min": 0, "max": 7, "step": 1}*
+*protoze ve chvili, kdy tam bude 0.0dB...31.5dB, je blbost, aby se zobrazoval selectbox s vic jak 60ti hodnotama...*
+*a asi by bylo fajn vratit tu i jednotku - takze "Attenuator": {"min": 0, "max": 7, "step": 1, "unit": "dB"}*
+
+*M: Souhlasim, toto je obecne a elegantni reseni, takto bychom to resili i v jinem prog. jazyku (resp. uz jsme to tak resili).*
+
+*M: ad Jazyky - zatim jen anglictina. Ostatni nejsou vylouceny, ale asi to nebudou desitky jazyku.*
+*L: ok, v tom pripade ty popisky sloupcu zatim nechme tak jak jsou, ale endpoint muzeme nazvat /table-headers/{lang} (kde parametr lang bude zatim vzdycky en)*
+
+*M: k rozsahum hodnot pro dualni moduly: Fakticky je to tak, ze v nejakem Socketu (Pozici napr. "Perimeter1") muzou byt zastrceny dva Plugy, zatim jsou to Plugy stejneho druhu (napr. SPDT + SPDT).*
+*Kazdy Plug je nastavitelny nezavisle, ale pokud jsou stejne, pak maji stejny rozsah vstupu. Jsou zatim rozsliseny podle vystupu - zatim jen dva vystupy A/B. Upravim v prikladu nize.*
+*Pokud by slo nejak hierarchicky pouzit stavajici jednoduchy modul, tak lze s vyhodou pouzit, napr. DP4T = SP4T + SP4T (zrejme vzdy).*
+*Na messenger jsem poslal obrazek. Uzivatel nemuze udelat chybu, kdyz bude mit sady OUT:IN1..IN4, OUTA:IN1A..IN4A, OUTB: IN1B..IN4B.*
+*Muzeme diskutovat o tom, zda je to elegantni a nutne z hlediska JSON/JS. Z hlediska uzivatele to vidime jako intuitivni.*
+
+*M: Nize jsem se pokusil zobecnit, dej vedet, jestli je to tak OK nebo poedituj podle sebe. Pokud ne, tak musime promazat jednu uroven {object:value} a ponechat jen value*
+
+
+L: (16.3.) Docela by mi pomohlo, kdyby ty options byly v tomto formatu: (muzu si to do toho teda predelat, ale kdyby se to tak vratilo, bylo by to fajn)
+
+"RxSP4T" : { "OUT" : [{ "value": 'IN1', "label": 'IN1' },{ "value": 'IN2', "label": 'IN2' }] }
+
+"RxSPDTDual" : { "OUTA" : [{ "value": 'IN1', "label": 'IN1' },{ "value": 'IN2', "label": 'IN2' }], "OUTB : [{ "value": 'IN1', "label": 'IN1' },{ "value": 'IN2', "label": 'IN2' }] }
+
+A jeste dotaz - nemohlo by se to jmenovat vse OUT/OUTA/OUTB - tzn. zbavit se ATTN, AMP aj.? (chapu, ze je to z technickyho hlediska neco jinyho, ale nikde se to nebude zobrazovat...).
+Pripadne druha moznost - mohla bych dostat vsech moznych hodnot, jakych ty klice muzou nabyvat - jestli jen OUT/ATTN/AMP, tak to tak muzem nechat
+
+M: OPRAVA: nebylo by spatny toto zobrazovat **v HEADER radku (oprava)**, aby uzivatel mel jasno, ze IN1A vede na OUTA a ne jinak.
+ATTN a AMP lze prejmenovat na OUT (premyslel jsem o tom) a nebo vubec nezobrazovat (v HEADER radku), ale OUT/OUTA/OUTB by nebylo spatny mit rozliseno a zobrazeno.
+Nebo aspon zobrazit v HEADER radku pro dual moduly dve policka vedle sebe OUTA + OUTB a v single modulech jen jedno policko OUTA - to by eventualne taky slo.
+Ale nejaky kompromis(zjednoduseni) udelat muzeme (stale jsme kdesi na zacatku), maximalne nas pak zakaznik donuti udelat nejakou verzi 2.0, kde by bylo slozitejsi API a slozitejsi frontend/backend.
+Vsechny tyto moje myslenky sleduji zakaznikovo zadani *predstavte si, ze jste uzivatel a udelejte to tak, aby se vam to jako uzivateli libilo*.
+
+L: Jasné zobrazit v hlavičce to klidně můžeme. OUT a OUTA + OUTB je v pohodě.
+Pokud ATTN a AMP (A + B) prejmenujeme na OUT (A + B) tak super.
+A nebo neni ani problem, kdyz zustane ATTN a AMP (A + B), ale budu vedet, ze uz zadna jina varianta vystupu neni mozna (je proste jen OU/ATTN/AMP)
+Pripadne jde to i nechat jak to je, pokud je to tak nejlepsi, poradim si s tim. ale predchozi 2 varianty jsou lepsi.
+
+
+Návrh:
+        {
+          "RxSP4T" : 
+            { "OUT" : ["IN1", "IN2", "IN3", "IN4"] }  
+          ,
+          "RxSPDT" : { "OUT" : ["IN1-AMP", "IN-1BP", "IN2-AMP", "IN2-BP"] }
+          ,
+          "RxSPDTDual": {
+            "OUTA" : ["IN1-AMP", "IN1-BP", "IN2-AMP", "IN2-BP"] ,
+            "OUTB" : ["IN1-AMP", "IN1-BP", "IN2-AMP", "IN2-BP"] 
+          } ,
+          "RxSingle" : { "OUT" : ["AMP", "BP"] },
+          "RxSingleDual" : { 
+        "OUTA" : ["ON", "OFF"],
+        "OUTB" : ["ON", "OFF"]
+          } ,
+          "SwitchSP4T" :{
+        "OUT" : ["IN1", "IN2", "IN3", "IN4"] 
+          } ,
+          "SwitchSP8T":{
+        "OUT": ["IN1", "IN2", "IN3", "IN4", "IN5", "IN6", "IN7", "IN8"]   
+          } ,
+          "NoiceSource" :{
+        "OUT": ["ON", "OFF"]  
+          } ,
+          "SwitchDP4T" :{
+        "OUTA": ["IN1A", "IN2A", "IN3A", "IN4A"] ,
+        "OUTB" : ["IN1B", "IN2B", "IN3B", "IN4B"] 
+          } ,
+          "Attenuator":{
+        "OUT" : { "min": 0, "max": 7, "step": 1, "unit": "dB"} 
+          } , 
+          "AttenuatorDual": {
+            "OUTA" : { "min": 0, "max": 7, "step": 1, "unit": "dB"} , 
+            "OUTB" : { "min": 0, "max": 7, "step": 1, "unit": "dB"} 
+          } ,
+          "Amplifier":{
+        "OUT" : ["ON", "OFF"]   
+          } , 
+          "AmplfifierDual":{
+        "OUTA" : ["ON", "OFF"] ,
+        "OUTB" : ["ON", "OFF"] 
+          }
+        }
+
++ Response 200 (application/json)
+
+        {
+          "RxSP4T_puvodni" : ["IN1", "IN2", "IN3", "IN4"],
+          "RxSP4T" : [ 
+            { "OUT" : ["IN1", "IN2", "IN3", "IN4"] }   // M: pokus o zobecneni - single ma stejnou hierarchii jako dual
+          ],
+          "RxSPDT_puvodni" : ["IN1-AMP", "IN1-BP", "IN2-AMP", "IN2-BP"],
+          "RxSPDT" : [
+            { "OUT" : ["IN1-AMP", "IN-1BP", "IN2-AMP", "IN2-BP"] }   // M: pokus o zobecneni - single ma stejnou hierarchii jako dual
+          ],
+          "RxSPDTDual": [ 
+            { "OUTA" : ["IN1-AMP", "IN1-BP", "IN2-AMP", "IN2-BP"] },
+            { "OUTB" : ["IN1-AMP", "IN1-BP", "IN2-AMP", "IN2-BP"] }
+          ],
+          "RxSingle_puvodni" : ["AMP", "BP"],
+          "RxSingle" : { "OUT" : ["AMP", "BP"] }, // M: pokus o zobecneni - single ma stejnou hierarchii jako dual
+          "RxSingleDual" : [ 
+            { "OUTA" : ["ON", "OFF"] },
+            { "OUTB" : ["ON", "OFF"] }
+          ],
+          "SwitchSP4T_puvodni" : ["IN1", "IN2", "IN3", "IN4"],
+          "SwitchSP4T" : [ 
+            { "OUT" : ["IN1", "IN2", "IN3", "IN4"]}   // M: pokus o zobecneni - single ma stejnou hierarchii jako dual
+          ],
+          "SwitchSP8T_puvodni": ["IN1", "IN2", "IN3", "IN4", "IN5", "IN6", "IN7", "IN8"],
+          "SwitchSP8T": [ 
+            { "OUT": ["IN1", "IN2", "IN3", "IN4", "IN5", "IN6", "IN7", "IN8"] }   // M: pokus o zobecneni - single ma stejnou hierarchii jako dual
+          ],
+          "NoiceSource_puvodni" : ["ON", "OFF"],
+          "NoiceSource" : [ 
+            { "OUT": ["ON", "OFF"]}   // M: pokus o zobecneni - single ma stejnou hierarchii jako dual
+          ],
+          "SwitchDP4T" : [ 
+            { "OUTA" : ["IN1A", "IN2A", "IN3A", "IN4A"] }, // L: takhle varianta je lepsi, jen to musi byt pole objektu, predelala jsem (jeste koukni na komentare u toho predchoziho JSONu)
+            { "OUTB" : ["IN1B", "IN2B", "IN3B", "IN4B"] }
+          ],
+          "Attenuator_puvodni": { "min": 0, "max": 7, "step": 1, "unit": "dB"},
+          "Attenuator": [ 
+            { "ATTN" : { "min": 0, "max": 7, "step": 1, "unit": "dB"} } // M: pokus o zobecneni - single ma stejnou hierarchii jako dual
+          ], // M. Lze prejmenovat na OUT nebo OUTA, pokud to pomuze
+          "AttenuatorDual": [
+            { "ATTNA" : { "min": 0, "max": 7, "step": 1, "unit": "dB"} }, // M. Lze prejmenovat na OUTA, pokud to pomuze
+            { "ATTNB" : { "min": 0, "max": 7, "step": 1, "unit": "dB"} } // M. Lze prejmenovat na OUTB, pokud to pomuze
+          ],
+          "Amplifier_puvodni": ["ON", "OFF"],
+          "Amplifier": [ 
+            { "AMP" : ["ON", "OFF"] }   // M: pokus o zobecneni - single ma stejnou hierarchii jako dual
+          ], // M. Lze prejmenovat na OUT nebo OUTA, pokud to pomuze
+          "AmplfifierDual": [ 
+            { "AMPA" : ["ON", "OFF"] }, // M. Lze prejmenovat na OUTA, pokud to pomuze
+            { "AMPB" : ["ON", "OFF"] } // M. Lze prejmenovat na OUTB, pokud to pomuze
+          ],
+        }
+        
+## Table headers [/table-headers]
+### Get  [GET]
+Hlavičky tabulky. Bude ta appka jen anglicky? Nebo hrozí i třeba němčina?
+Kliče bych dávala camelCasem a tak, aby odpovídaly idSocket v GET komplet tabulky.
+Takže ty bych dala taky camelCasem (jestli to ničemu nevadí) - poupravila jsem. 
+
+L: (16.3.) - tohle je takto ok
+
+M: (16.3.) - pouprav na camelCase, kde to najdes, asi jsem na to uplne nedbal (nemam to rutinne zazite).
+L: myslim, ze je to ok, co tak koukam
+L: (17.3.) ještě mě napadá, co dát sem všechny informace, co budou v headers? tj i idPlug a ten typ výstupu? (OUT, ATTN...)
+
+M: (17.3.) Může být, ale měli bychom mít na paměti, že typ výstupu je závislý výhradně na idPlug a mapování idSocket-idPlug je dodáno backendem po startu, není to konstanta.
+Zároveň by to mapování mělo být unikátní - momentálně v "application/json".
+L: (17.3.) jasne, backend to doda tady v tom endpointu (tj. po startu). Jako konstantu na FE nebudeme mit nic (aspon to tak zatim vypada)
+Nevím jestli uplne chapu tuhle vetu... "Zároveň by to mapování mělo být unikátní - momentálně v "application/json"."
+Tak co takto? Muzeme tam pak i mapovat OUT - skutecny oznaceni toho vystupu (napr. "OUT": "AMP"). A zobrazit v hlavickach to skutecny oznaceni. Ale to je spis na vas.
+M: (17.3.B) asi muze byt, je to jedna z moznosti - zacinam se ztracet v tom, co bude videt a co zustane uvnitr jen pro potreby aplikace :-) Ty to asi vidis lip.
+Jeste jedna vec - asi bych zavcas prejmenoval vsude keys "time" na "stepIndex" a "dwellingTime" na "stepDuration", at v tom nemame pozdeji zmatek. Tyto nazvy jsem zmenil na popud Pavla a Juraje, je to tak trefnejsi (i pro pochopeni kodu).
+L: (17.3.B) oukej, prejmenujme. klidne muzes poupravit, nebo vecer poupravim ja celkove ten kod do podoby, na ktere jsme se domluvili, poupravim tabulku a vystavim ji nekam na web, at muzes kouknout.
+Zmatek chapu :) Ja se snad porad orientuju :) Obecne je to tak, ze "key" zustane uvnitr, "value" pujde videt.
+
+        {
+           "time":{
+              "headerLabel":"Step Index"
+           },
+           "dwellingTime":{
+              "headerLabel":"Step Duration"
+           },
+           "perimeter1":{
+              "headerLabel":"Perimeter1",
+              "idPlug":"RxSP4T",
+              "outputs": {"OUT": "OUT"}
+           },
+           "inner7":{
+              "headerLabel":"Inner 7",
+              "idPlug":"AmplifierDual",
+              "outputs": {"OUTA": "AMPA", "OUTB": "AMPB",}
+           }
+        }
++ Response 200 (application/json)
+
+        {
+          "time" : "Step Index",
+          "dwellingTime" : "Step Duration",
+          "perimeter1" : "Perimeter1",
+          "perimeter2" : "Perimeter2",
+          "perimeter3" : "Perimeter3",
+          "perimeter4" : "Perimeter4",
+          "perimeter5" : "Perimeter5",
+          "inner1" : "Inner 1",
+          "inner2" : "Inner 2",
+          "inner3" : "Inner 3",
+          "inner4" : "Inner 4",
+          "inner5" : "Inner 5",
+          "inner6" : "Inner 6",
+          "inner7" : "Inner 7"
+        }
+        
+## Table update [/table/{time}]
+### Update time-values in a column [PUT]
+Update tabulky 
+in progress - podle toho, jak se domluvime na GET tabulky 
+
++ Request (application/json)
+
++ Attributes
+
+            
++ Parameters
+    + time (integer) - ID radku (casu) jako integer       
+
++ Response 200 (application/json)
