@@ -3,6 +3,277 @@ HOST: https://polls.apiblueprint.org/
 
 # API example
 Backup: https://github.com/Hubackova/api-example
+
+## Plugs [/plugs]
+
+### Plugs [GET]
+
++ Response 200 (application/json)
+
+        {
+            "RxSP4T":{
+                "properties": ["AMP", "BP"],
+                "input":[
+                    "IN1",
+                    "IN2",
+                    "IN3",
+                    "IN4"
+                ],
+                "output": ["OUT"]
+            },
+            "RxSPDT":{
+                "properties": ["AMP", "BP"],
+                "input":[
+                    "IN1",
+                    "IN2"
+                ],
+                "output": ["OUT"]
+            },
+            "RxSingle":{
+                "properties": ["AMP", "BP"],
+                "input":[
+                    "IN"
+                ],
+                "output": ["OUT"]
+            },
+            "RxDual":{
+                "properties": ["AMP", "BP"],
+                "inputA":[
+                    "IN1A",
+                    "IN2A"
+                ],
+                "inputB":[
+                    "IN1B",
+                    "IN2B"
+                ],
+                "output": ["OUTA", "OUTB"]
+            },
+             "SP8T":{
+                "properties": ["ON", "OFF"],
+                "input":[
+                    "IN1",
+                    "IN2",
+                    "IN3",
+                    "IN4",
+                    "IN5",
+                    "IN6",
+                    "IN7",
+                    "IN8"
+                ],
+                "output": ["OUT"]
+            },
+            "SP4T":{
+                "properties": [],
+                "input":[
+                    "IN1",
+                    "IN2",
+                    "IN3",
+                    "IN4"
+                ],
+                "output": ["OUT"]
+            },
+            "DPDT":{
+                "properties": ["ON", "OFF"],
+                "inputA":[
+                    "IN1A",
+                    "IN2A"
+                ],
+                "inputB":[
+                    "IN1B",
+                    "IN2B"
+                ],
+                "output": ["OUTA", "OUTB"]
+            },
+
+            "ATTN":{
+                "properties":{
+                    "min":0,
+                    "max":7,
+                    "step":1,
+                    "unit":"dB"
+                },
+                "input":[
+                    "IN"
+                ],
+                "output": ["OUT"]
+            },
+            "ATTNDual":{
+                "properties":{
+                    "min":0,
+                    "max":7,
+                    "step":1,
+                    "unit":"dB"
+                },
+                "inputA":[
+                    "INA"
+                ],
+               "inputB":[
+                    "INB"
+                ],
+                "output": ["OUTA", "OUTB"]
+            },
+            "AMP":{
+                "properties": ["ON", "OFF"],
+                "input":[
+                    "IN"
+                ],
+                "output": ["OUT"]
+            },
+            "AMPDual":{
+                "properties": ["ON", "OFF"],
+                "inputA":[
+                    "INA"
+                ],
+                "inputB":[
+                    "INB"
+                ],
+                "output": ["OUTA", "OUTB"]
+            },
+            "noiceSource":{
+                "properties": ["ON", "OFF"],
+                "input":[],
+                "output": ["OUT"]
+            }
+        }
+        
+## SocketsOptions [/socketsOptions]
+
+### SocketsOptions [GET]
+
++ Response 200 (application/json)
+
+        {
+          "outer": [
+            "Outer1",
+            "Outer2",
+            "Outer3",
+            "Outer4",
+            "Outer5",
+            "Outer6",
+            "Outer16"
+          ],
+          "inner": ["Inner1", "Inner2", "Inner13"]
+        }
+        
+## PlugsOptions [/plugsOptions]
+
+### PlugsOptions [GET]
+
++ Response 200 (application/json)
+
+        {
+            "outer": ["RxSP4T", "RxSPDT", "RxSingle", "RxDual"],
+            "inner": [
+                "SP4T",
+                "SP8T",
+                "DPDT",
+                "ATTN",
+                "ATTNDual",
+                "AMP",
+                "AMPDual",
+                "NoiseSource"
+            ]
+        }
+        
+## DefaultValues [/defaultValues]
+
+### DefaultValues [GET]
+
++ Response 200 (application/json)
+
+        [
+          {
+            "id": 1,
+            "stages": [
+              {
+                "socketType": "outer",
+                "socket": "Outer1",
+                "plug": "RxSP4T",
+                "input": "IN1",
+                "output": "OUT",
+                "property": "AMP"
+              },
+              {
+                "socketType": "inner",
+                "socket": "Inner1",
+                "plug": "SP4T",
+                "input": "IN1",
+                "output": "OUT",
+                "property": ""
+              },
+              {
+                "socketType": "inner",
+                "socket": "Inner5",
+                "plug": "SP4T",
+                "input": "IN1",
+                "output": "OUT",
+                "property": ""
+              },
+              {
+                "socketType": "inner",
+                "socket": "Inner6",
+                "plug": "AMP",
+                "input": "IN",
+                "output": "OUT",
+                "property": "ON"
+              },
+              {
+                "socketType": "inner",
+                "socket": "Inner7",
+                "plug": "ATTN",
+                "input": "IN",
+                "output": "OUT",
+                "property": 0
+              }
+            ]
+          },
+          {
+            id: 2,
+            "stages": [
+              {
+                "socketType": "outer",
+                "socket": "Outer1",
+                "plug": "RxSP4T",
+                "input": "IN2",
+                "output": "OUT",
+                "property": "AMP"
+              },
+              {
+                "socketType": "inner",
+                "socket": "Inner1",
+                "plug": "SP4T",
+                "input": "IN1",
+                "output": "OUT",
+                "property": ""
+              },
+              {
+                "socketType": "inner",
+                "socket": "Inner5",
+                "plug": "SP4T",
+                "input": "IN1",
+                "output": "OUT",
+                "property": ""
+              },
+              {
+                "socketType": "inner",
+                "socket": "Inner6",
+                "plug": "AMP",
+                "input": "IN",
+                "output": "OUT",
+                "property": "ON"
+              },
+              {
+                "socketType": "inner",
+                "socket": "Inner7",
+                "plug": "ATTN",
+                "input": "IN",
+                "output": "OUT",
+                "property": 0
+              }
+            ]
+          }
+        ]
+        
 ## Whole Table [/table]
 
 ### List All Table Cells [GET]
@@ -13,59 +284,59 @@ Backup: https://github.com/Hubackova/api-example
           {
             "stepIndex": 1,
             "stepDuration": 10,
-            "perimeter1": {
-              "OUT": "IN1"
+            "outer1": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter2": {
-              "OUT": "IN1"
+            "outer2": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter3": {
-              "OUT": "IN1"
+            "outer3": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter4": {
-              "OUT": "IN1"
+            "outer4": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter5": {
-              "OUT": "IN1"
+            "outer5": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter5": {
-              "OUT": "IN1"
+            "outer5": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter6": {
-              "OUT": "IN1"
+            "outer6": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter7": {
-              "OUT": "IN1"
+            "outer7": {
+              "OUT": "IN4-AMP"
             },
-            "perimeter8": {
-              "OUT": "IN1"
+            "outer8": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter9": {
-              "OUT": "IN1"
+            "outer9": {
+              "OUT": "IN2-AMP"
             },
-            "perimeter10": {
-              "OUT": "IN1"
+            "outer10": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter11": {
-              "OUT": "IN1"
+            "outer11": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter12": {
-              "OUT": "IN1"
+            "outer12": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter13": {
-              "OUT": "IN1"
+            "outer13": {
+              "OUT": "IN2-AMP"
             },
-            "perimeter14": {
-              "OUT": "IN1"
+            "outer14": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter15": {
-              "OUT": "IN1"
+            "outer15": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter16": {
-              "OUT": "IN1"
+            "outer16": {
+              "OUT": "IN1-AMP"
             },
             "inner1": {
-              "OUT": "IN3"
+              "OUT": "IN3-AMP"
             },
             "inner2": {
               "OUT": "IN7"
@@ -92,56 +363,56 @@ Backup: https://github.com/Hubackova/api-example
           {
             "stepIndex": 2,
             "stepDuration": 15,
-            "perimeter1": {
-              "OUT": "IN1"
+            "outer1": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter2": {
-              "OUT": "IN1"
+            "outer2": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter3": {
-              "OUT": "IN1"
+            "outer3": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter4": {
-              "OUT": "IN1"
+            "outer4": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter5": {
-              "OUT": "IN1"
+            "outer5": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter5": {
-              "OUT": "IN1"
+            "outer5": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter6": {
-              "OUT": "IN1"
+            "outer6": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter7": {
-              "OUT": "IN1"
+            "outer7": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter8": {
-              "OUT": "IN1"
+            "outer8": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter9": {
-              "OUT": "IN1"
+            "outer9": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter10": {
-              "OUT": "IN1"
+            "outer10": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter11": {
-              "OUT": "IN1"
+            "outer11": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter12": {
-              "OUT": "IN1"
+            "outer12": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter13": {
-              "OUT": "IN1"
+            "outer13": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter14": {
-              "OUT": "IN1"
+            "outer14": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter15": {
-              "OUT": "IN1"
+            "outer15": {
+              "OUT": "IN1-AMP"
             },
-            "perimeter16": {
-              "OUT": "IN1"
+            "outer16": {
+              "OUT": "IN1-AMP"
             },
             "inner1": {
               "OUT": "IN3"
@@ -181,16 +452,20 @@ Backup: https://github.com/Hubackova/api-example
         {
             "RxSP4T":{
                 "OUT":[
-                    "IN1",
-                    "IN2",
-                    "IN3",
-                    "IN4"
+                    "IN1-AMP",
+                    "IN2-AMP",
+                    "IN3-AMP",
+                    "IN4-AMP",
+                    "IN1-BP",
+                    "IN2-BP",
+                    "IN3-BP",
+                    "IN4-BP"
                 ]
             },
             "RxSPDT":{
                 "OUT":[
                     "IN1-AMP",
-                    "IN-1BP",
+                    "IN1-BP",
                     "IN2-AMP",
                     "IN2-BP"
                 ]
@@ -319,129 +594,129 @@ Backup: https://github.com/Hubackova/api-example
             "key": "stepDuration",
             "headerLabel": "Step Duration"
           },
-          "perimeter1": {
-            "key": "perimeter1",
-            "headerLabel": "Perimeter 1",
+          "outer1": {
+            "key": "outer1",
+            "headerLabel": "Outer 1",
             "idPlug": "RxSP4T",
             "outputs": {
               "OUT": "OUT"
             }
           },
-          "perimeter2": {
-            "key": "perimeter2",
-            "headerLabel": "Perimeter 2",
+          "outer2": {
+            "key": "outer2",
+            "headerLabel": "Outer 2",
             "idPlug": "RxSP4T",
             "outputs": {
               "OUT": "OUT"
             }
           },
-          "perimeter3": {
-            "key": "perimeter3",
-            "headerLabel": "Perimeter 3",
+          "outer3": {
+            "key": "outer3",
+            "headerLabel": "Outer 3",
             "idPlug": "RxSP4T",
             "outputs": {
               "OUT": "OUT"
             }
           },
-          "perimeter4": {
-            "key": "perimeter4",
-            "headerLabel": "Perimeter 4",
+          "outer4": {
+            "key": "outer4",
+            "headerLabel": "Outer 4",
             "idPlug": "RxSP4T",
             "outputs": {
               "OUT": "OUT"
             }
           },
-          "perimeter5": {
-            "key": "perimeter5",
-            "headerLabel": "Perimeter 5",
+          "outer5": {
+            "key": "outer5",
+            "headerLabel": "Outer 5",
             "idPlug": "RxSP4T",
             "outputs": {
               "OUT": "OUT"
             }
           },
-          "perimeter6": {
-            "key": "perimeter6",
-            "headerLabel": "Perimeter 6",
+          "outer6": {
+            "key": "outer6",
+            "headerLabel": "Outer 6",
             "idPlug": "RxSP4T",
             "outputs": {
               "OUT": "OUT"
             }
           },
-          "perimeter7": {
-            "key": "perimeter7",
-            "headerLabel": "Perimeter 7",
+          "outer7": {
+            "key": "outer7",
+            "headerLabel": "Outer 7",
             "idPlug": "RxSP4T",
             "outputs": {
               "OUT": "OUT"
             }
           },
-          "perimeter8": {
-            "key": "perimeter8",
-            "headerLabel": "Perimeter 8",
+          "outer8": {
+            "key": "outer8",
+            "headerLabel": "Outer 8",
             "idPlug": "RxSP4T",
             "outputs": {
               "OUT": "OUT"
             }
           },
-          "perimeter9": {
-            "key": "perimeter9",
-            "headerLabel": "Perimeter 9",
+          "outer9": {
+            "key": "outer9",
+            "headerLabel": "Outer 9",
             "idPlug": "RxSP4T",
             "outputs": {
               "OUT": "OUT"
             }
           },
-          "perimeter10": {
-            "key": "perimeter10",
-            "headerLabel": "Perimeter 10",
+          "outer10": {
+            "key": "outer10",
+            "headerLabel": "Outer 10",
             "idPlug": "RxSP4T",
             "outputs": {
               "OUT": "OUT"
             }
           },
-          "perimeter11": {
-            "key": "perimeter11",
-            "headerLabel": "Perimeter 11",
+          "outer11": {
+            "key": "outer11",
+            "headerLabel": "Outer 11",
             "idPlug": "RxSP4T",
             "outputs": {
               "OUT": "OUT"
             }
           },
-          "perimeter12": {
-            "key": "perimeter12",
-            "headerLabel": "Perimeter 12",
+          "outer12": {
+            "key": "outer12",
+            "headerLabel": "Outer 12",
             "idPlug": "RxSP4T",
             "outputs": {
               "OUT": "OUT"
             }
           },
-          "perimeter13": {
-            "key": "perimeter13",
-            "headerLabel": "Perimeter 13",
+          "outer13": {
+            "key": "outer13",
+            "headerLabel": "Outer 13",
             "idPlug": "RxSP4T",
             "outputs": {
               "OUT": "OUT"
             }
           },
-          "perimeter14": {
-            "key": "perimeter14",
-            "headerLabel": "Perimeter 14",
+          "outer14": {
+            "key": "outer14",
+            "headerLabel": "Outer 14",
             "idPlug": "RxSP4T",
             "outputs": {
               "OUT": "OUT"
             }
           },
-          "perimeter15": {
-            "key": "perimeter15",
-            "headerLabel": "Perimeter 15",
+          "outer15": {
+            "key": "outer15",
+            "headerLabel": "Outer 15",
             "idPlug": "RxSP4T",
             "outputs": {
               "OUT": "OUT"
             }
           },
-          "perimeter16": {
-            "key": "perimeter16",
-            "headerLabel": "Perimeter 16",
+          "outer16": {
+            "key": "outer16",
+            "headerLabel": "Outer 16",
             "idPlug": "RxSP4T",
             "outputs": {
               "OUT": "OUT"
@@ -458,7 +733,7 @@ Backup: https://github.com/Hubackova/api-example
           "inner2": {
             "key": "inner2",
             "headerLabel": "Inner 2",
-            "idPlug": "SwitchSP8T",
+            "idPlug": "SwitchSP4T",
             "outputs": {
               "OUT": "OUT"
             }
