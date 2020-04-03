@@ -2,6 +2,10 @@ FORMAT: 1A
 HOST: https://polls.apiblueprint.org/
 
 # API example
+Na co je potřeba při vývoji API myslet:
+- role (výroba/zákazník) a s tím spojená authentizace/autorizace
+- verzování (přístupy jsou různé, např. https://www.xmatters.com/blog/devops/blog-four-rest-api-versioning-strategies/)
+
 Backup: https://github.com/Hubackova/api-example
 
 ## Selections [/selections]
@@ -202,12 +206,19 @@ Stejně jako výše - pokud bude víc variant, může být /plugsOptions/{modelI
             ]
         }
         
-## DefaultValues [/defaultValues]
+## Values [/defaultValues]
 
-### DefaultValues [GET]
+### Default Values [GET]
 Defaultní nastavení tabulky - tj. všech 64 (případně klidně víc/míň řádků)
 Případně můžeme mít endpoint rovnou jako /defaultValues/{modelId}, pokud je jisté, že defaultních nastavení bude víc typů.
 Pokud by mělo být v budoucnu víc/míň socketů, backend pošle v poli stages o objekt víc/míň.
+
+Mimoto, by měla vzniknout routa GET /values (popř. /values/{modelId}), která vrátí nastavení daného uživatele (struktura JSONu bude stejná)
+Upravy bych pak viděla v první fázi jako PUT celé tabulky - to asi bude nejjednodušší, tj. PUT /values (popř. /values/{modelId}) a v body kompletní tabulka, 
+V druhé fázi jako PATCH jednotlivých řádků, nebo stagí (proto bych tam dávala ty unikátní id a počítala s tím při ukládání dat do db)
+Případně může klidně být rovnou PATCH (nechávám na Tobě, popř. na člověku, co bude dělat BE)
+
+
 
 + Response 200 (application/json)
 
@@ -215,7 +226,8 @@ Pokud by mělo být v budoucnu víc/míň socketů, backend pošle v poli stages
           {
             "id": 1,
             "stages": [
-              {
+              { 
+                "stageId": "1st1",
                 "socketType": "outer",
                 "socket": "Outer1",
                 "plug": "RxSP4T",
@@ -223,7 +235,8 @@ Pokud by mělo být v budoucnu víc/míň socketů, backend pošle v poli stages
                 "output": "OUT",
                 "property": "AMP"
               },
-              {
+              { 
+                "stageId": "1st2",
                 "socketType": "inner",
                 "socket": "Inner1",
                 "plug": "SP4T",
@@ -231,7 +244,8 @@ Pokud by mělo být v budoucnu víc/míň socketů, backend pošle v poli stages
                 "output": "OUT",
                 "property": ""
               },
-              {
+              { 
+                "stageId": "1st3",
                 "socketType": "inner",
                 "socket": "Inner5",
                 "plug": "SP4T",
@@ -239,7 +253,8 @@ Pokud by mělo být v budoucnu víc/míň socketů, backend pošle v poli stages
                 "output": "OUT",
                 "property": ""
               },
-              {
+              { 
+                "stageId": "1st4",
                 "socketType": "inner",
                 "socket": "Inner6",
                 "plug": "AMP",
@@ -247,7 +262,8 @@ Pokud by mělo být v budoucnu víc/míň socketů, backend pošle v poli stages
                 "output": "OUT",
                 "property": "ON"
               },
-              {
+              { 
+                "stageId": "1st5",
                 "socketType": "inner",
                 "socket": "Inner7",
                 "plug": "ATTN",
@@ -260,7 +276,8 @@ Pokud by mělo být v budoucnu víc/míň socketů, backend pošle v poli stages
           {
             "id": 2,
             "stages": [
-              {
+              { 
+                "stageId": "2st1",
                 "socketType": "outer",
                 "socket": "Outer1",
                 "plug": "RxSP4T",
@@ -268,7 +285,8 @@ Pokud by mělo být v budoucnu víc/míň socketů, backend pošle v poli stages
                 "output": "OUT",
                 "property": "AMP"
               },
-              {
+              { 
+                "stageId": "2st2",
                 "socketType": "inner",
                 "socket": "Inner1",
                 "plug": "SP4T",
@@ -276,7 +294,8 @@ Pokud by mělo být v budoucnu víc/míň socketů, backend pošle v poli stages
                 "output": "OUT",
                 "property": ""
               },
-              {
+              { 
+                "stageId": "2st3",
                 "socketType": "inner",
                 "socket": "Inner5",
                 "plug": "SP4T",
@@ -284,7 +303,8 @@ Pokud by mělo být v budoucnu víc/míň socketů, backend pošle v poli stages
                 "output": "OUT",
                 "property": ""
               },
-              {
+              { 
+                "stageId": "2st4",
                 "socketType": "inner",
                 "socket": "Inner6",
                 "plug": "AMP",
@@ -292,7 +312,8 @@ Pokud by mělo být v budoucnu víc/míň socketů, backend pošle v poli stages
                 "output": "OUT",
                 "property": "ON"
               },
-              {
+              { 
+                "stageId": "2st5",
                 "socketType": "inner",
                 "socket": "Inner7",
                 "plug": "ATTN",
