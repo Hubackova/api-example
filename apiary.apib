@@ -4,9 +4,10 @@ HOST: https://polls.apiblueprint.org/
 # API example
 Backup: https://github.com/Hubackova/api-example
 
-## Plugs [/plugs]
+## Selections [/selections]
 
-### Plugs [GET]
+### Selections [GET]
+Možná nastavení pro jednotlivý plugs. Pokud bude variant nastavení víc (např. pro různé modely), připravme endopoint rovnou jako /selections/{modelId}
 
 + Response 200 (application/json)
 
@@ -139,7 +140,8 @@ Backup: https://github.com/Hubackova/api-example
 ## SocketsOptions [/socketsOptions]
 
 ### SocketsOptions [GET]
-
+Možné varianty sockets pro inner/outer
+Stejně jako výše - pokud bude víc variant, může být /socketsOptions/{modelId}
 + Response 200 (application/json)
 
         {
@@ -150,14 +152,39 @@ Backup: https://github.com/Hubackova/api-example
             "Outer4",
             "Outer5",
             "Outer6",
+            "Outer7",
+            "Outer8",
+            "Outer9",
+            "Outer10",
+            "Outer11",
+            "Outer12",
+            "Outer13",
+            "Outer14",
+            "Outer15",
             "Outer16"
           ],
-          "inner": ["Inner1", "Inner2", "Inner13"]
+          "inner": [    
+            "Inner1",
+            "Inner2",
+            "Inner3",
+            "Inner4",
+            "Inner5",
+            "Inner6",
+            "Inner7",
+            "Inner8",
+            "Inner9",
+            "Inner10",
+            "Inner11",
+            "Inner12",
+            "Inner13"
+           ]
         }
         
 ## PlugsOptions [/plugsOptions]
 
 ### PlugsOptions [GET]
+Možné varianty plugs pro inner/outer
+Stejně jako výše - pokud bude víc variant, může být /plugsOptions/{modelId}
 
 + Response 200 (application/json)
 
@@ -178,6 +205,9 @@ Backup: https://github.com/Hubackova/api-example
 ## DefaultValues [/defaultValues]
 
 ### DefaultValues [GET]
+Defaultní nastavení tabulky - tj. všech 64 (případně klidně víc/míň řádků)
+Případně můžeme mít endpoint rovnou jako /defaultValues/{modelId}, pokud je jisté, že defaultních nastavení bude víc typů.
+Pokud by mělo být v budoucnu víc/míň socketů, backend pošle v poli stages o objekt víc/míň.
 
 + Response 200 (application/json)
 
@@ -228,7 +258,7 @@ Backup: https://github.com/Hubackova/api-example
             ]
           },
           {
-            id: 2,
+            "id": 2,
             "stages": [
               {
                 "socketType": "outer",
@@ -273,6 +303,14 @@ Backup: https://github.com/Hubackova/api-example
             ]
           }
         ]
+      
+      
+      
+      
+      
+      
+      
+      
         
 ## Whole Table [/table]
 
